@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Generate strong, secure passwords instantly. Customize length, character types, and more.">
+  <title>Secure Password Generator</title>
+
+  <!-- Preconnect for fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind Config (same as NameGen) -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Roboto', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            },
+            accent: {
+              400: '#a855f7',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+            }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.6s ease-out',
+            'fade-in-up': 'fadeInUp 0.6s ease-out',
+            'slide-up': 'slideUp 0.4s ease-out',
+            'pop-in': 'popIn 0.3s ease-out',
+            'pulse-brief': 'pulseBrief 0.3s ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            fadeInUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            popIn: {
+              '0%': { opacity: '0', transform: 'scale(0.9)' },
+              '100%': { opacity: '1', transform: 'scale(1)' },
+            },
+            pulseBrief: {
+              '0%, 100%': { opacity: '1' },
+              '50%': { opacity: '0.6' },
+            },
+          },
+          boxShadow: {
+            'glow': '0 0 20px rgba(139, 92, 246, 0.4)',
+            'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.08)',
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Prevent dark mode flash -->
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+
+  <style>
+    /* Custom styles (matching NameGen) */
+    body {
+      font-family: 'Roboto', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Gradient background */
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #8b5cf6 100%);
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Smooth transitions */
+    * {
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 9999;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Card hover effect */
+    .result-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .result-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Stagger animation delay */
+    .stagger-1 { animation-delay: 0.05s; }
+    .stagger-2 { animation-delay: 0.1s; }
+    .stagger-3 { animation-delay: 0.15s; }
+    .stagger-4 { animation-delay: 0.2s; }
+    .stagger-5 { animation-delay: 0.25s; }
+    .stagger-6 { animation-delay: 0.3s; }
+    .stagger-7 { animation-delay: 0.35s; }
+    .stagger-8 { animation-delay: 0.4s; }
+    .stagger-9 { animation-delay: 0.45s; }
+    .stagger-10 { animation-delay: 0.5s; }
+
+    /* Smooth scroll */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Focus styles */
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 2px solid #8b5cf6;
+      outline-offset: 2px;
+    }
+
+    /* Range slider custom styles */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 8px;
+      border-radius: 4px;
+      background: #e5e7eb;
+      outline: none;
+    }
+
+    .dark input[type="range"] {
+      background: #475569;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Strength indicator colors */
+    .strength-weak { color: #ef4444; }
+    .strength-medium { color: #f59e0b; }
+    .strength-strong { color: #10b981; }
+
+    .strength-bar-weak { background-color: #ef4444; }
+    .strength-bar-medium { background-color: #f59e0b; }
+    .strength-bar-strong { background-color: #10b981; }
+
+    /* Loading spinner */
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 3px solid white;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+  <!-- Navigation (identical to NameGen) -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Logo -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+            <i class="fas fa-shield-alt text-white text-xl"></i>
+          </div>
+          <span class="text-xl font-bold text-gray-900 dark:text-white">PassGen</span>
+        </div>
+
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="#features" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Features</a>
+          <a href="#how-it-works" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">How It Works</a>
+          <a href="#security" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Security</a>
+        </div>
+
+        <!-- Dark Mode Toggle -->
+        <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500" aria-label="Toggle dark mode">
+          <i class="fas fa-moon text-gray-600 dark:text-gray-300 hidden dark:block"></i>
+          <i class="fas fa-sun text-yellow-500 dark:hidden"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="gradient-bg pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <!-- Decorative elements -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-purple-300/20 rounded-full blur-2xl"></div>
+    <div class="absolute top-1/2 left-1/4 w-24 h-24 bg-pink-300/10 rounded-full blur-xl"></div>
+
+    <div class="max-w-7xl mx-auto text-center relative z-10">
+      <div class="animate-fade-in-up">
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+          Secure Password<br>
+          <span class="text-yellow-300">Generator</span>
+        </h1>
+        <p class="text-xl text-white/90 max-w-2xl mx-auto mb-10 leading-relaxed">
+          Generate strong, secure passwords instantly for your accounts, servers, and applications. Customizable, fast, and completely free.
+        </p>
+        <a href="#generator" class="inline-flex items-center gap-3 bg-white text-primary-700 px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200">
+          <i class="fas fa-key"></i>
+          Generate Password
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Password Generator Section -->
+  <section id="generator" class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-slate-900">
+    <div class="max-w-5xl mx-auto">
+
+      <!-- Section header -->
+      <div class="text-center mb-12 scroll-reveal">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+          <span class="gradient-text">Password</span> Generator
+        </h2>
+        <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          Create strong, unique passwords in seconds. Customize your options and copy with one click.
+        </p>
+      </div>
+
+      <!-- Generator Interface -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-soft p-6 sm:p-8 border border-gray-100 dark:border-slate-700 scroll-reveal">
+
+        <!-- Password Length Control -->
+        <div class="mb-8">
+          <div class="flex justify-between items-end mb-3">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Password Length</label>
+            <span id="length-value" class="text-2xl font-bold gradient-text">16</span>
+          </div>
+          <input type="range" id="length-slider" min="8" max="64" value="16" class="w-full">
+          <div class="flex justify-between text-xs text-gray-500 dark:text-gray-400 mt-2">
+            <span>8</span>
+            <span>64</span>
+          </div>
+        </div>
+
+        <!-- Character Options -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+          <label class="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+            <input type="checkbox" id="uppercase" checked class="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+            <span class="font-medium text-gray-700 dark:text-gray-300">Uppercase Letters (A-Z)</span>
+          </label>
+
+          <label class="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+            <input type="checkbox" id="lowercase" checked class="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+            <span class="font-medium text-gray-700 dark:text-gray-300">Lowercase Letters (a-z)</span>
+          </label>
+
+          <label class="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+            <input type="checkbox" id="numbers" checked class="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+            <span class="font-medium text-gray-700 dark:text-gray-300">Numbers (0-9)</span>
+          </label>
+
+          <label class="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors">
+            <input type="checkbox" id="symbols" checked class="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+            <span class="font-medium text-gray-700 dark:text-gray-300">Symbols (!@#$%^&*)</span>
+          </label>
+
+          <label class="flex items-center space-x-3 cursor-pointer group p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors sm:col-span-2">
+            <input type="checkbox" id="exclude-similar" class="w-5 h-5 rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+            <span class="font-medium text-gray-700 dark:text-gray-300">Exclude similar characters (i, l, 1, L, 0, O, etc.)</span>
+          </label>
+        </div>
+
+        <!-- Generate Button -->
+        <div class="text-center mb-8">
+          <button id="generate-btn" class="inline-flex items-center gap-3 gradient-bg text-white px-10 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-purple-300">
+            <i class="fas fa-download"></i>
+            <span class="btn-text">Generate Password</span>
+            <div class="spinner hidden"></div>
+          </button>
+        </div>
+
+        <!-- Password Result Display -->
+        <div id="result-container" class="hidden animate-pop-in">
+          <div class="bg-gray-50 dark:bg-slate-900 rounded-xl p-6 border-2 border-gray-200 dark:border-slate-600 mb-4">
+            <div class="flex items-start justify-between gap-4 mb-4">
+              <div class="flex-1">
+                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Generated Password</p>
+                <code id="password-display" class="text-lg sm:text-2xl font-mono break-all text-gray-900 dark:text-white block p-3 bg-white dark:bg-slate-800 rounded-lg border border-gray-200 dark:border-slate-600"></code>
+              </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex flex-wrap gap-3">
+              <button id="copy-btn" class="inline-flex items-center gap-2 px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+                <i class="fas fa-copy"></i>
+                Copy Password
+              </button>
+              <button id="regenerate-btn" class="inline-flex items-center gap-2 px-6 py-3 bg-white dark:bg-slate-700 text-gray-700 dark:text-gray-200 border border-gray-300 dark:border-slate-600 hover:bg-gray-50 dark:hover:bg-slate-600 rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500">
+                <i class="fas fa-sync-alt"></i>
+                Regenerate
+              </button>
+            </div>
+          </div>
+
+          <!-- Password Strength -->
+          <div class="bg-white dark:bg-slate-800 rounded-xl p-6 border border-gray-200 dark:border-slate-600">
+            <div class="flex items-center justify-between mb-3">
+              <span class="font-medium text-gray-700 dark:text-gray-300">Password Strength</span>
+              <span id="strength-text" class="font-bold text-lg">-</span>
+            </div>
+            <div class="w-full h-3 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+              <div id="strength-bar" class="h-full rounded-full transition-all duration-500" style="width: 0%"></div>
+            </div>
+            <p id="strength-tip" class="text-sm text-gray-500 dark:text-gray-400 mt-3"></p>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="text-center py-12">
+          <div class="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center">
+            <i class="fas fa-shield-alt text-3xl text-primary-500"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Ready to Generate</h3>
+          <p class="text-gray-600 dark:text-gray-400">Configure your options above and click generate to create a secure password.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-800 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16 scroll-reveal">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">Why Use <span class="gradient-text">PassGen?</span></h2>
+        <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          Built with security and convenience in mind. Here's why developers and security professionals trust our generator.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Feature 1 -->
+        <div class="bg-gray-50 dark:bg-slate-900 p-6 rounded-xl shadow-soft hover:shadow-lg transition-shadow border border-gray-100 dark:border-slate-700 scroll-reveal">
+          <div class="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center mb-5">
+            <i class="fas fa-lock text-2xl text-green-600 dark:text-green-400"></i>
+          </div>
+          <h3 class="font-bold text-xl mb-3">Cryptographically Secure</h3>
+          <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+            Uses browser's built-in cryptographic APIs for true randomness. Your passwords are generated locally and never transmitted.
+          </p>
+        </div>
+
+        <!-- Feature 2 -->
+        <div class="bg-gray-50 dark:bg-slate-900 p-6 rounded-xl shadow-soft hover:shadow-lg transition-shadow border border-gray-100 dark:border-slate-700 scroll-reveal stagger-1">
+          <div class="w-14 h-14 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center mb-5">
+            <i class="fas fa-sliders-h text-2xl text-primary-600 dark:text-primary-400"></i>
+          </div>
+          <h3 class="font-bold text-xl mb-3">Fully Customizable</h3>
+          <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+            Choose length from 8 to 64 characters. Select character types, exclude similar characters, and get exactly what you need.
+          </p>
+        </div>
+
+        <!-- Feature 3 -->
+        <div class="bg-gray-50 dark:bg-slate-900 p-6 rounded-xl shadow-soft hover:shadow-lg transition-shadow border border-gray-100 dark:border-slate-700 scroll-reveal stagger-2">
+          <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-5">
+            <i class="fas fa-user-shield text-2xl text-blue-600 dark:text-blue-400"></i>
+          </div>
+          <h3 class="font-bold text-xl mb-3">Privacy First</h3>
+          <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+            All generation happens in your browser. No server requests, no tracking, no data collection. Completely anonymous.
+          </p>
+        </div>
+
+        <!-- Feature 4 -->
+        <div class="bg-gray-50 dark:bg-slate-900 p-6 rounded-xl shadow-soft hover:shadow-lg transition-shadow border border-gray-100 dark:border-slate-700 scroll-reveal stagger-3">
+          <div class="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-5">
+            <i class="fas fa-bolt text-2xl text-purple-600 dark:text-purple-400"></i>
+          </div>
+          <h3 class="font-bold text-xl mb-3">Instant & Free</h3>
+          <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+            No signup, no waiting, no limits. Generate as many passwords as you need, completely free of charge.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-slate-900">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-16 scroll-reveal">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">How It <span class="gradient-text">Works</span></h2>
+        <p class="text-gray-600 dark:text-gray-400">
+          Get your secure password in three simple steps.
+        </p>
+      </div>
+
+      <div class="space-y-12">
+        <!-- Step 1 -->
+        <div class="flex flex-col sm:flex-row items-start gap-6 scroll-reveal">
+          <div class="flex-shrink-0">
+            <div class="w-16 h-16 gradient-bg rounded-2xl flex items-center justify-center shadow-lg">
+              <span class="text-2xl font-bold text-white">1</span>
+            </div>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-xl font-bold mb-3">Customize Your Options</h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              Select your desired password length (8-64 characters) and choose which character types to include: uppercase, lowercase, numbers, and symbols. Optionally exclude similar characters for readability.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex flex-col sm:flex-row items-start gap-6 scroll-reveal">
+          <div class="flex-shrink-0">
+            <div class="w-16 h-16 gradient-bg rounded-2xl flex items-center justify-center shadow-lg">
+              <span class="text-2xl font-bold text-white">2</span>
+            </div>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-xl font-bold mb-3">Generate Password</h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              Click the generate button. Your password is created instantly using cryptographically secure random number generation, ensuring true unpredictability.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex flex-col sm:flex-row items-start gap-6 scroll-reveal">
+          <div class="flex-shrink-0">
+            <div class="w-16 h-16 gradient-bg rounded-2xl flex items-center justify-center shadow-lg">
+              <span class="text-2xl font-bold text-white">3</span>
+            </div>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-xl font-bold mb-3">Copy & Use</h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              Copy your password with one click. The strength meter shows you how secure it is. Use it immediately for your accounts, servers, or applications.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Security Info Section -->
+  <section id="security" class="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-800 transition-colors duration-300">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-12 scroll-reveal">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4"><span class="gradient-text">Security</span> Matters</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 scroll-reveal">
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-4 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
+            <i class="fas fa-exclamation-triangle text-2xl text-red-600 dark:text-red-400"></i>
+          </div>
+          <h3 class="font-bold text-lg mb-2">Weak Passwords Are Risky</h3>
+          <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+            81% of data breaches involve weak or stolen passwords. Reused passwords make you vulnerable across multiple services.
+          </p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-4 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+            <i class="fas fa-check-circle text-2xl text-green-600 dark:text-green-400"></i>
+          </div>
+          <h3 class="font-bold text-lg mb-2">Length Beats Complexity</h3>
+          <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+            Longer passwords are exponentially harder to crack. A 16-character random password is vastly more secure than an 8-character complex one.
+          </p>
+        </div>
+
+        <div class="text-center">
+          <div class="w-16 h-16 mx-auto mb-4 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center">
+            <i class="fas fa-user-shield text-2xl text-primary-600 dark:text-primary-400"></i>
+          </div>
+          <h3 class="font-bold text-lg mb-2">Use a Password Manager</h3>
+          <p class="text-gray-600 dark:text-gray-400 text-sm leading-relaxed">
+            Store generated passwords in a password manager like Bitwarden, 1Password, or KeePass. Never reuse passwords across sites.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-20 px-4 sm:px-6 lg:px-8 gradient-bg">
+    <div class="max-w-4xl mx-auto text-center scroll-reveal">
+      <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6">
+        Generate Strong Passwords Now
+      </h2>
+      <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+        Protect your accounts with cryptographically secure passwords. Free, instant, and no signup required.
+      </p>
+      <a href="#generator" class="inline-flex items-center gap-3 bg-white text-primary-700 px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200">
+        <i class="fas fa-key"></i>
+        Generate Now
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer (same as NameGen) -->
+  <footer class="bg-gray-900 dark:bg-black text-gray-300 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <!-- Brand -->
+        <div class="md:col-span-1">
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+              <i class="fas fa-shield-alt text-white text-xl"></i>
+            </div>
+            <span class="text-xl font-bold text-white">PassGen</span>
+          </div>
+          <p class="text-sm text-gray-400 leading-relaxed">
+            Free secure password generator. Protect your accounts with strong, unique passwords. No signup required.
+          </p>
+        </div>
+
+        <!-- Product -->
+        <div>
+          <h4 class="font-semibold text-white mb-4">Product</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#generator" class="hover:text-white transition-colors">Generator</a></li>
+            <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
+            <li><a href="#how-it-works" class="hover:text-white transition-colors">How It Works</a></li>
+            <li><a href="#security" class="hover:text-white transition-colors">Security Info</a></li>
+          </ul>
+        </div>
+
+        <!-- Legal -->
+        <div>
+          <h4 class="font-semibold text-white mb-4">Legal</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Cookie Policy</a></li>
+          </ul>
+        </div>
+
+        <!-- Connect -->
+        <div>
+          <h4 class="font-semibold text-white mb-4">Connect</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors">GitHub</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Twitter</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-800 pt-8 flex flex-col sm:flex-row justify-between items-center">
+        <p class="text-sm text-gray-500 mb-4 sm:mb-0">
+          &copy; 2024 PassGen. All rights reserved.
+        </p>
+        <p class="text-sm text-gray-500">
+          Made with <i class="fas fa-heart text-red-500 mx-1"></i> for security everywhere.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
+    <i class="fas fa-check-circle text-green-400"></i>
+    <span class="font-medium">Copied to clipboard!</span>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // ============================================
+    // STATE
+    // ============================================
+    let currentPassword = '';
+    let isGenerating = false;
+
+    // ============================================
+    // THEME TOGGLE
+    // ============================================
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    themeToggle.addEventListener('click', () => {
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+
+    // ============================================
+    // LENGTH SLIDER
+    // ============================================
+    const lengthSlider = document.getElementById('length-slider');
+    const lengthValue = document.getElementById('length-value');
+
+    lengthSlider.addEventListener('input', (e) => {
+      lengthValue.textContent = e.target.value;
+    });
+
+    // ============================================
+    // PASSWORD GENERATION
+    // ============================================
+
+    // Get selected character sets
+    function getCharSets() {
+      const charSets = {
+        uppercase: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
+        lowercase: 'abcdefghijklmnopqrstuvwxyz',
+        numbers: '0123456789',
+        symbols: '!@#$%^&*()_+-=[]{}|;:,.<>?'
+      };
+
+      let charset = '';
+      if (document.getElementById('uppercase').checked) charset += charSets.uppercase;
+      if (document.getElementById('lowercase').checked) charset += charSets.lowercase;
+      if (document.getElementById('numbers').checked) charset += charSets.numbers;
+      if (document.getElementById('symbols').checked) charset += charSets.symbols;
+
+      // Remove similar characters if option is checked
+      if (document.getElementById('exclude-similar').checked) {
+        const similar = 'iIlL10oO';
+        charset = charset.split('').filter(c => !similar.includes(c)).join('');
+      }
+
+      return charset;
+    }
+
+    // Generate password using crypto API
+    function generatePassword(length) {
+      const charset = getCharSets();
+
+      if (charset.length === 0) {
+        alert('Please select at least one character type.');
+        return '';
+      }
+
+      const array = new Uint32Array(length);
+      const password = [];
+
+      // Use crypto.getRandomValues for cryptographically secure randomness
+      window.crypto.getRandomValues(array);
+
+      for (let i = 0; i < length; i++) {
+        password.push(charset[array[i] % charset.length]);
+      }
+
+      return password.join('');
+    }
+
+    // Calculate password strength
+    function calculateStrength(password) {
+      let score = 0;
+      const checks = {
+        length: password.length >= 12,
+        uppercase: /[A-Z]/.test(password),
+        lowercase: /[a-z]/.test(password),
+        numbers: /[0-9]/.test(password),
+        symbols: /[^A-Za-z0-9]/.test(password)
+      };
+
+      // Score calculation
+      if (checks.length) score += 2;
+      if (checks.uppercase) score += 1;
+      if (checks.lowercase) score += 1;
+      if (checks.numbers) score += 1;
+      if (checks.symbols) score += 1;
+
+      // Bonus for length beyond 12
+      if (password.length > 16) score += 1;
+      if (password.length > 24) score += 1;
+
+      // Scale: 0-7 -> convert to percentage
+      const percentage = (score / 7) * 100;
+
+      let strength = 'weak';
+      let color = 'strength-weak';
+      let barColor = 'strength-bar-weak';
+      let tip = '';
+
+      if (percentage >= 70) {
+        strength = 'strong';
+        color = 'strength-strong';
+        barColor = 'strength-bar-strong';
+        tip = 'Excellent! This password would take centuries to crack.';
+      } else if (percentage >= 40) {
+        strength = 'medium';
+        color = 'strength-medium';
+        barColor = 'strength-bar-medium';
+        tip = 'Good password. Consider increasing length for better security.';
+      } else {
+        tip = 'Weak password. Try increasing length and adding more character types.';
+      }
+
+      return { percentage, strength, color, barColor, tip, checks };
+    }
+
+    // Update strength display
+    function updateStrengthDisplay(password) {
+      const { percentage, strength, color, barColor, tip } = calculateStrength(password);
+
+      const strengthText = document.getElementById('strength-text');
+      const strengthBar = document.getElementById('strength-bar');
+      const strengthTip = document.getElementById('strength-tip');
+
+      strengthText.textContent = strength.charAt(0).toUpperCase() + strength.slice(1);
+      strengthText.className = `font-bold text-lg ${color}`;
+      strengthBar.className = `h-full rounded-full transition-all duration-500 ${barColor}`;
+      strengthBar.style.width = `${percentage}%`;
+      strengthTip.textContent = tip;
+    }
+
+    // ============================================
+    // GENERATE BUTTON HANDLER
+    // ============================================
+    const generateBtn = document.getElementById('generate-btn');
+    const btnText = generateBtn.querySelector('.btn-text');
+    const spinner = generateBtn.querySelector('.spinner');
+    const resultContainer = document.getElementById('result-container');
+    const emptyState = document.getElementById('empty-state');
+    const passwordDisplay = document.getElementById('password-display');
+
+    generateBtn.addEventListener('click', async () => {
+      if (isGenerating) return;
+
+      const length = parseInt(lengthSlider.value);
+      const charset = getCharSets();
+
+      if (charset.length === 0) {
+        showToast('Please select at least one character type', true);
+        return;
+      }
+
+      isGenerating = true;
+      btnText.textContent = 'Generating...';
+      spinner.classList.remove('hidden');
+      generateBtn.disabled = true;
+
+      // Small delay for UX
+      await new Promise(resolve => setTimeout(resolve, 300));
+
+      const password = generatePassword(length);
+      currentPassword = password;
+
+      // Display with pop-in animation
+      resultContainer.classList.remove('hidden');
+      emptyState.classList.add('hidden');
+
+      passwordDisplay.textContent = password;
+      updateStrengthDisplay(password);
+
+      // Re-trigger animation
+      resultContainer.classList.remove('animate-pop-in');
+      void resultContainer.offsetWidth; // Trigger reflow
+      resultContainer.classList.add('animate-pop-in');
+
+      btnText.textContent = 'Generate Again';
+      spinner.classList.add('hidden');
+      generateBtn.disabled = false;
+      isGenerating = false;
+    });
+
+    // ============================================
+    // COPY & REGENERATE BUTTONS
+    // ============================================
+    const copyBtn = document.getElementById('copy-btn');
+    const regenerateBtn = document.getElementById('regenerate-btn');
+
+    copyBtn.addEventListener('click', () => {
+      if (!currentPassword) return;
+
+      copyToClipboard(currentPassword);
+
+      // Visual feedback
+      const originalHtml = copyBtn.innerHTML;
+      copyBtn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+      copyBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+      copyBtn.classList.remove('bg-primary-600', 'hover:bg-primary-700');
+
+      setTimeout(() => {
+        copyBtn.innerHTML = originalHtml;
+        copyBtn.classList.remove('bg-green-600', 'hover:bg-green-700');
+        copyBtn.classList.add('bg-primary-600', 'hover:bg-primary-700');
+      }, 2000);
+    });
+
+    regenerateBtn.addEventListener('click', () => {
+      generateBtn.click();
+    });
+
+    // ============================================
+    // COPY TO CLIPBOARD (with fallback)
+    // ============================================
+    let toastTimeout;
+
+    function showToast(message = 'Copied to clipboard!', isError = false) {
+      const toast = document.getElementById('toast');
+      const icon = toast.querySelector('i');
+      const text = toast.querySelector('span');
+
+      if (isError) {
+        icon.className = 'fas fa-exclamation-circle text-red-400';
+        text.textContent = message;
+      } else {
+        icon.className = 'fas fa-check-circle text-green-400';
+        text.textContent = message;
+      }
+
+      toast.classList.add('show');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(() => showToast()).catch(fallbackCopy);
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-9999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+
+      try {
+        document.execCommand('copy');
+        showToast();
+      } catch (err) {
+        console.error('Copy failed:', err);
+        showToast('Failed to copy. Please select and copy manually.', true);
+      }
+
+      document.body.removeChild(textArea);
+    }
+
+    // ============================================
+    // SCROLL ANIMATIONS
+    // ============================================
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-fade-in-up');
+          entry.target.classList.remove('opacity-0', 'translate-y-8');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const revealElements = document.querySelectorAll('.scroll-reveal');
+      revealElements.forEach(el => {
+        el.classList.add('opacity-0', 'translate-y-8');
+        observer.observe(el);
+      });
+    });
+
+    // ============================================
+    // SMOOTH SCROLL
+    // ============================================
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          const navHeight = document.querySelector('nav').offsetHeight;
+          const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 20;
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+  </script>
+</body>
+</html>
