@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Generate unique usernames, hostnames, and random names instantly. Perfect for developers, gamers, and startups.">
+  <title>Username & Hostname Generator</title>
+
+  <!-- Preconnect for fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Tailwind Config -->
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Roboto', 'sans-serif'],
+          },
+          colors: {
+            primary: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+            },
+            accent: {
+              400: '#a855f7',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+            }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.6s ease-out',
+            'fade-in-up': 'fadeInUp 0.6s ease-out',
+            'slide-up': 'slideUp 0.4s ease-out',
+            'pop-in': 'popIn 0.3s ease-out',
+            'pulse-brief': 'pulseBrief 0.3s ease-in-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            fadeInUp: {
+              '0%': { opacity: '0', transform: 'translateY(20px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            popIn: {
+              '0%': { opacity: '0', transform: 'scale(0.9)' },
+              '100%': { opacity: '1', transform: 'scale(1)' },
+            },
+            pulseBrief: {
+              '0%, 100%': { opacity: '1' },
+              '50%': { opacity: '0.6' },
+            },
+          },
+          boxShadow: {
+            'glow': '0 0 20px rgba(139, 92, 246, 0.4)',
+            'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.08)',
+          },
+        },
+      },
+    }
+  </script>
+
+  <!-- Prevent dark mode flash -->
+  <script>
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
+
+  <style>
+    /* Custom styles */
+    body {
+      font-family: 'Roboto', sans-serif;
+      overflow-x: hidden;
+    }
+
+    /* Gradient background */
+    .gradient-bg {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #8b5cf6 100%);
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Smooth transitions */
+    * {
+      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    }
+
+    /* Hide scrollbar for clean look but keep functionality */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    /* Toast notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 9999;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* Card hover effect */
+    .result-card {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .result-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Stagger animation delay */
+    .stagger-1 { animation-delay: 0.05s; }
+    .stagger-2 { animation-delay: 0.1s; }
+    .stagger-3 { animation-delay: 0.15s; }
+    .stagger-4 { animation-delay: 0.2s; }
+    .stagger-5 { animation-delay: 0.25s; }
+    .stagger-6 { animation-delay: 0.3s; }
+    .stagger-7 { animation-delay: 0.35s; }
+    .stagger-8 { animation-delay: 0.4s; }
+    .stagger-9 { animation-delay: 0.45s; }
+    .stagger-10 { animation-delay: 0.5s; }
+
+    /* Smooth scroll behavior */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Focus styles for accessibility */
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 2px solid #8b5cf6;
+      outline-offset: 2px;
+    }
+
+    /* Loading spinner */
+    .spinner {
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 3px solid white;
+      width: 20px;
+      height: 20px;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+
+  <!-- Navigation -->
+  <nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md shadow-sm transition-colors duration-300">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between items-center h-16">
+        <!-- Logo -->
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+            <i class="fas fa-terminal text-white text-xl"></i>
+          </div>
+          <span class="text-xl font-bold text-gray-900 dark:text-white">NameGen</span>
+        </div>
+
+        <!-- Desktop Menu -->
+        <div class="hidden md:flex items-center space-x-8">
+          <a href="#features" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">Features</a>
+          <a href="#how-it-works" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">How It Works</a>
+          <a href="#faq" class="text-gray-600 dark:text-gray-300 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">FAQ</a>
+        </div>
+
+        <!-- Dark Mode Toggle -->
+        <button id="theme-toggle" class="p-2 rounded-lg bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500" aria-label="Toggle dark mode">
+          <i class="fas fa-moon text-gray-600 dark:text-gray-300 hidden dark:block"></i>
+          <i class="fas fa-sun text-yellow-500 dark:hidden"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="gradient-bg pt-32 pb-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <!-- Decorative elements -->
+    <div class="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full blur-xl"></div>
+    <div class="absolute bottom-10 right-10 w-32 h-32 bg-purple-300/20 rounded-full blur-2xl"></div>
+    <div class="absolute top-1/2 left-1/4 w-24 h-24 bg-pink-300/10 rounded-full blur-xl"></div>
+
+    <div class="max-w-7xl mx-auto text-center relative z-10">
+      <div class="animate-fade-in-up">
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight">
+          Generate Unique<br>
+          <span class="text-yellow-300">Usernames & Hostnames</span>
+        </h1>
+        <p class="text-xl text-white/90 max-w-2xl mx-auto mb-10 leading-relaxed">
+          Instantly create creative, memorable names for your projects, gaming accounts, or development environments.
+          No signup required.
+        </p>
+        <a href="#generator" class="inline-flex items-center gap-3 bg-white text-primary-700 px-8 py-4 rounded-full font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200">
+          <i class="fas fa-bolt"></i>
+          Start Generating
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Generator Section -->
+  <section id="generator" class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-slate-900">
+    <div class="max-w-7xl mx-auto">
+
+      <!-- Section header -->
+      <div class="text-center mb-12 scroll-reveal">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">
+          <span class="gradient-text">Name Generator</span> Tool
+        </h2>
+        <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          Choose your preferences and generate unique names in seconds.
+        </p>
+      </div>
+
+      <!-- Generator Interface -->
+      <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-soft p-6 sm:p-8 border border-gray-100 dark:border-slate-700 scroll-reveal">
+
+        <!-- Generator Type Tabs -->
+        <div class="flex flex-wrap gap-3 mb-8" role="tablist">
+          <button class="gen-tab active" data-tab="username" role="tab" aria-selected="true" aria-controls="username-panel">
+            <i class="fas fa-user"></i>
+            Username
+          </button>
+          <button class="gen-tab" data-tab="hostname" role="tab" aria-selected="false" aria-controls="hostname-panel">
+            <i class="fas fa-server"></i>
+            Hostname
+          </button>
+          <button class="gen-tab" data-tab="random" role="tab" aria-selected="false" aria-controls="random-panel">
+            <i class="fas fa-user-friends"></i>
+            Random Name
+          </button>
+        </div>
+
+        <!-- Tab Panels -->
+        <div id="username-panel" class="gen-panel active" role="tabpanel">
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Generate creative usernames for social media, gaming, or professional profiles.
+          </p>
+        </div>
+
+        <div id="hostname-panel" class="gen-panel hidden" role="tabpanel">
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Create unique hostnames and subdomains for your servers, projects, or development environments.
+          </p>
+        </div>
+
+        <div id="random-panel" class="gen-panel hidden" role="tabpanel">
+          <p class="text-gray-600 dark:text-gray-400 mb-6">
+            Generate random first and last names for testing, character creation, or placeholders.
+          </p>
+        </div>
+
+        <!-- Generator Options -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+          <!-- Style Select -->
+          <div>
+            <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Style</label>
+            <select id="style-select" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-shadow">
+              <option value="tech">Tech</option>
+              <option value="gaming">Gaming</option>
+              <option value="professional">Professional</option>
+            </select>
+          </div>
+
+          <!-- Length Select -->
+          <div>
+            <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Length</label>
+            <select id="length-select" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-shadow">
+              <option value="short">Short (6-8 chars)</option>
+              <option value="medium" selected>Medium (9-12 chars)</option>
+              <option value="long">Long (13+ chars)</option>
+            </select>
+          </div>
+
+          <!-- Count Select -->
+          <div>
+            <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Number of Results</label>
+            <select id="count-select" class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-shadow">
+              <option value="5">5 names</option>
+              <option value="10" selected>10 names</option>
+              <option value="20">20 names</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Generate Button -->
+        <div class="text-center mb-8">
+          <button id="generate-btn" class="inline-flex items-center gap-3 gradient-bg text-white px-10 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] transition-all duration-200 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-purple-300">
+            <i class="fas fa-magic"></i>
+            <span class="btn-text">Generate Names</span>
+            <div class="spinner hidden"></div>
+          </button>
+        </div>
+
+        <!-- Results Grid -->
+        <div id="results-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 hidden">
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="text-center py-12">
+          <div class="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-slate-700 rounded-full flex items-center justify-center">
+            <i class="fas fa-sparkles text-3xl text-primary-500"></i>
+          </div>
+          <h3 class="text-xl font-semibold mb-2">Ready to Generate</h3>
+          <p class="text-gray-600 dark:text-gray-400">Choose your options and click generate to see unique names appear here.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Examples Section -->
+  <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-800 transition-colors duration-300">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-12 scroll-reveal">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">Example <span class="gradient-text">Outputs</span></h2>
+        <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          See the quality and variety of names our generator produces.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 scroll-reveal">
+        <!-- Username Examples -->
+        <div class="bg-gray-50 dark:bg-slate-900 p-6 rounded-xl border border-gray-100 dark:border-slate-700">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900/30 rounded-lg flex items-center justify-center">
+              <i class="fas fa-user text-primary-600 dark:text-primary-400"></i>
+            </div>
+            <h3 class="font-bold text-lg">Usernames</h3>
+          </div>
+          <div class="space-y-3">
+            <div class="result-card bg-white dark:bg-slate-800 p-3 rounded-lg border border-gray-200 dark:border-slate-600 flex justify-between items-center">
+              <code class="text-sm">CyberNinja_42</code>
+              <button class="copy-btn p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded transition-colors" data-text="CyberNinja_42"><i class="fas fa-copy text-gray-500"></i></button>
+            </div>
+            <div class="result-card bg-white dark:bg-slate-800 p-3 rounded-lg border border-gray-200 dark:border-slate-600 flex justify-between items-center">
+              <code class="text-sm">PixelWizzard</code>
+              <button class="copy-btn p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded transition-colors" data-text="PixelWizzard"><i class="fas fa-copy text-gray-500"></i></button>
+            </div>
+            <div class="result-card bg-white dark:bg-slate-800 p-3 rounded-lg border border-gray-200 dark:border-slate-600 flex justify-between items-center">
+              <code class="text-sm">CodeWhisperer</code>
+              <button class="copy-btn p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded transition-colors" data-text="CodeWhisperer"><i class="fas fa-copy text-gray-500"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Hostname Examples -->
+        <div class="bg-gray-50 dark:bg-slate-900 p-6 rounded-xl border border-gray-100 dark:border-slate-700">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-accent-100 dark:bg-accent-900/30 rounded-lg flex items-center justify-center">
+              <i class="fas fa-server text-accent-600 dark:text-accent-400"></i>
+            </div>
+            <h3 class="font-bold text-lg">Hostnames</h3>
+          </div>
+          <div class="space-y-3">
+            <div class="result-card bg-white dark:bg-slate-800 p-3 rounded-lg border border-gray-200 dark:border-slate-600 flex justify-between items-center">
+              <code class="text-sm">phantom-server-01.dev</code>
+              <button class="copy-btn p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded transition-colors" data-text="phantom-server-01.dev"><i class="fas fa-copy text-gray-500"></i></button>
+            </div>
+            <div class="result-card bg-white dark:bg-slate-800 p-3 rounded-lg border border-gray-200 dark:border-slate-600 flex justify-between items-center">
+              <code class="text-sm">api-gateway-3.io</code>
+              <button class="copy-btn p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded transition-colors" data-text="api-gateway-3.io"><i class="fas fa-copy text-gray-500"></i></button>
+            </div>
+            <div class="result-card bg-white dark:bg-slate-800 p-3 rounded-lg border border-gray-200 dark:border-slate-600 flex justify-between items-center">
+              <code class="text-sm">cloud-node-99.app</code>
+              <button class="copy-btn p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded transition-colors" data-text="cloud-node-99.app"><i class="fas fa-copy text-gray-500"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Random Name Examples -->
+        <div class="bg-gray-50 dark:bg-slate-900 p-6 rounded-xl border border-gray-100 dark:border-slate-700">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+              <i class="fas fa-user-friends text-green-600 dark:text-green-400"></i>
+            </div>
+            <h3 class="font-bold text-lg">Random Names</h3>
+          </div>
+          <div class="space-y-3">
+            <div class="result-card bg-white dark:bg-slate-800 p-3 rounded-lg border border-gray-200 dark:border-slate-600 flex justify-between items-center">
+              <code class="text-sm">Alexander Chen</code>
+              <button class="copy-btn p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded transition-colors" data-text="Alexander Chen"><i class="fas fa-copy text-gray-500"></i></button>
+            </div>
+            <div class="result-card bg-white dark:bg-slate-800 p-3 rounded-lg border border-gray-200 dark:border-slate-600 flex justify-between items-center">
+              <code class="text-sm">Sophia Martinez</code>
+              <button class="copy-btn p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded transition-colors" data-text="Sophia Martinez"><i class="fas fa-copy text-gray-500"></i></button>
+            </div>
+            <div class="result-card bg-white dark:bg-slate-800 p-3 rounded-lg border border-gray-200 dark:border-slate-600 flex justify-between items-center">
+              <code class="text-sm">Marcus Johnson</code>
+              <button class="copy-btn p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded transition-colors" data-text="Marcus Johnson"><i class="fas fa-copy text-gray-500"></i></button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section id="features" class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-slate-900">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-16 scroll-reveal">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">Why Use <span class="gradient-text">NameGen?</span></h2>
+        <p class="text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
+          Powerful features tailored for different user needs.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <!-- Feature 1: Developers -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-soft hover:shadow-lg transition-shadow border border-gray-100 dark:border-slate-700 scroll-reveal">
+          <div class="w-14 h-14 bg-primary-100 dark:bg-primary-900/30 rounded-xl flex items-center justify-center mb-5">
+            <i class="fas fa-code text-2xl text-primary-600 dark:text-primary-400"></i>
+          </div>
+          <h3 class="font-bold text-xl mb-3">For Developers</h3>
+          <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+            Quickly generate server hostnames, database names, and environment identifiers for your projects. Perfect for Docker containers, microservices, and dev environments.
+          </p>
+        </div>
+
+        <!-- Feature 2: Gamers -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-soft hover:shadow-lg transition-shadow border border-gray-100 dark:border-slate-700 scroll-reveal stagger-1">
+          <div class="w-14 h-14 bg-purple-100 dark:bg-purple-900/30 rounded-xl flex items-center justify-center mb-5">
+            <i class="fas fa-gamepad text-2xl text-purple-600 dark:text-purple-400"></i>
+          </div>
+          <h3 class="font-bold text-xl mb-3">For Gamers</h3>
+          <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+            Stand out with unique gamer tags, character names, and clan identifiers. Multiple styles ensure you find the perfect name for any gaming platform.
+          </p>
+        </div>
+
+        <!-- Feature 3: Startups -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-soft hover:shadow-lg transition-shadow border border-gray-100 dark:border-slate-700 scroll-reveal stagger-2">
+          <div class="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mb-5">
+            <i class="fas fa-rocket text-2xl text-blue-600 dark:text-blue-400"></i>
+          </div>
+          <h3 class="font-bold text-xl mb-3">For Startups</h3>
+          <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+            Brainstorm product names, domain variations, or brand identities. Professional styles help you make a strong first impression with clients and users.
+          </p>
+        </div>
+
+        <!-- Feature 4: System Admins -->
+        <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-soft hover:shadow-lg transition-shadow border border-gray-100 dark:border-slate-700 scroll-reveal stagger-3">
+          <div class="w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-xl flex items-center justify-center mb-5">
+            <i class="fas fa-network-wired text-2xl text-green-600 dark:text-green-400"></i>
+          </div>
+          <h3 class="font-bold text-xl mb-3">For System Admins</h3>
+          <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+            Generate consistent, organized hostnames for servers, workstations, and network devices. Implement naming conventions across your entire infrastructure.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="py-20 px-4 sm:px-6 lg:px-8 bg-white dark:bg-slate-800 transition-colors duration-300">
+    <div class="max-w-4xl mx-auto">
+      <div class="text-center mb-16 scroll-reveal">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">How It <span class="gradient-text">Works</span></h2>
+        <p class="text-gray-600 dark:text-gray-400">
+          Get started in just three simple steps.
+        </p>
+      </div>
+
+      <div class="space-y-12">
+        <!-- Step 1 -->
+        <div class="flex flex-col sm:flex-row items-start gap-6 scroll-reveal">
+          <div class="flex-shrink-0">
+            <div class="w-16 h-16 gradient-bg rounded-2xl flex items-center justify-center shadow-lg">
+              <span class="text-2xl font-bold text-white">1</span>
+            </div>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-xl font-bold mb-3">Choose Your Generator Type</h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              Select whether you need usernames, hostnames, or random names. Each generator is optimized for its specific use case with appropriate word banks and patterns.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="flex flex-col sm:flex-row items-start gap-6 scroll-reveal">
+          <div class="flex-shrink-0">
+            <div class="w-16 h-16 gradient-bg rounded-2xl flex items-center justify-center shadow-lg">
+              <span class="text-2xl font-bold text-white">2</span>
+            </div>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-xl font-bold mb-3">Customize Your Options</h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              Pick a style (tech, gaming, or professional) and desired length. Decide how many results you want - 5, 10, or 20 names at once.
+            </p>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="flex flex-col sm:flex-row items-start gap-6 scroll-reveal">
+          <div class="flex-shrink-0">
+            <div class="w-16 h-16 gradient-bg rounded-2xl flex items-center justify-center shadow-lg">
+              <span class="text-2xl font-bold text-white">3</span>
+            </div>
+          </div>
+          <div class="flex-1">
+            <h3 class="text-xl font-bold mb-3">Generate & Copy</h3>
+            <p class="text-gray-600 dark:text-gray-400 leading-relaxed">
+              Click the generate button to instantly create your names. Each result has a one-click copy button. No signup, no waiting, completely free.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ Section -->
+  <section id="faq" class="py-20 px-4 sm:px-6 lg:px-8 bg-gray-50 dark:bg-slate-900">
+    <div class="max-w-3xl mx-auto">
+      <div class="text-center mb-12 scroll-reveal">
+        <h2 class="text-3xl sm:text-4xl font-bold mb-4">Frequently <span class="gradient-text">Asked Questions</span></h2>
+      </div>
+
+      <div class="space-y-4 scroll-reveal">
+        <!-- FAQ Item 1 -->
+        <div class="faq-item bg-white dark:bg-slate-800 rounded-xl shadow-soft border border-gray-100 dark:border-slate-700 overflow-hidden">
+          <button class="faq-question w-full px-6 py-5 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors focus:outline-none focus-visible:bg-gray-50 dark:focus-visible:bg-slate-700/50" aria-expanded="false">
+            <span class="font-semibold text-lg pr-4">What makes a good username?</span>
+            <i class="fas fa-chevron-down text-gray-400 transition-transform duration-300 flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-6 pb-5 text-gray-600 dark:text-gray-400 leading-relaxed">
+            A good username is memorable, unique, and reflects your personality or brand. It should be easy to type, spell, and share. Our generator creates combinations that balance creativity with usability across different platforms.
+          </div>
+        </div>
+
+        <!-- FAQ Item 2 -->
+        <div class="faq-item bg-white dark:bg-slate-800 rounded-xl shadow-soft border border-gray-100 dark:border-slate-700 overflow-hidden">
+          <button class="faq-question w-full px-6 py-5 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors focus:outline-none focus-visible:bg-gray-50 dark:focus-visible:bg-slate-700/50" aria-expanded="false">
+            <span class="font-semibold text-lg pr-4">What is a hostname and when would I use it?</span>
+            <i class="fas fa-chevron-down text-gray-400 transition-transform duration-300 flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-6 pb-5 text-gray-600 dark:text-gray-400 leading-relaxed">
+            A hostname is the unique identifier for a device or server on a network. You'd use hostnames for naming servers, setting up local development environments, creating subdomains, or organizing infrastructure. Consistent hostname conventions make network management much easier.
+          </div>
+        </div>
+
+        <!-- FAQ Item 3 -->
+        <div class="faq-item bg-white dark:bg-slate-800 rounded-xl shadow-soft border border-gray-100 dark:border-slate-700 overflow-hidden">
+          <button class="faq-question w-full px-6 py-5 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors focus:outline-none focus-visible:bg-gray-50 dark:focus-visible:bg-slate-700/50" aria-expanded="false">
+            <span class="font-semibold text-lg pr-4">Can I use these names for commercial projects?</span>
+            <i class="fas fa-chevron-down text-gray-400 transition-transform duration-300 flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-6 pb-5 text-gray-600 dark:text-gray-400 leading-relaxed">
+            Yes! All generated names are free to use for personal or commercial projects. However, we recommend checking trademark availability for brand-critical names and verifying domain/subdomain availability before committing.
+          </div>
+        </div>
+
+        <!-- FAQ Item 4 -->
+        <div class="faq-item bg-white dark:bg-slate-800 rounded-xl shadow-soft border border-gray-100 dark:border-slate-700 overflow-hidden">
+          <button class="faq-question w-full px-6 py-5 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors focus:outline-none focus-visible:bg-gray-50 dark:focus-visible:bg-slate-700/50" aria-expanded="false">
+            <span class="font-semibold text-lg pr-4">How random are the generated names?</span>
+            <i class="fas fa-chevron-down text-gray-400 transition-transform duration-300 flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-6 pb-5 text-gray-600 dark:text-gray-400 leading-relaxed">
+            Our generator uses cryptographic randomness from your browser's built-in APIs to create unique combinations from carefully curated word banks. We combine different words, add variations, and ensure no duplicates within a single batch to maximize uniqueness.
+          </div>
+        </div>
+
+        <!-- FAQ Item 5 -->
+        <div class="faq-item bg-white dark:bg-slate-800 rounded-xl shadow-soft border border-gray-100 dark:border-slate-700 overflow-hidden">
+          <button class="faq-question w-full px-6 py-5 text-left flex justify-between items-center hover:bg-gray-50 dark:hover:bg-slate-700/50 transition-colors focus:outline-none focus-visible:bg-gray-50 dark:focus-visible:bg-slate-700/50" aria-expanded="false">
+            <span class="font-semibold text-lg pr-4">Does my data get stored or tracked?</span>
+            <i class="fas fa-chevron-down text-gray-400 transition-transform duration-300 flex-shrink-0"></i>
+          </button>
+          <div class="faq-answer hidden px-6 pb-5 text-gray-600 dark:text-gray-400 leading-relaxed">
+            No. All generation happens locally in your browser. We don't store any generated names, track your usage, or require an account. Your privacy is protected - this tool is completely anonymous.
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="py-20 px-4 sm:px-6 lg:px-8 gradient-bg">
+    <div class="max-w-4xl mx-auto text-center scroll-reveal">
+      <h2 class="text-3xl sm:text-4xl font-bold text-white mb-6">
+        Ready to Find Your Perfect Name?
+      </h2>
+      <p class="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+        Generate unique usernames, hostnames, and more in seconds. Free, fast, and no signup required.
+      </p>
+      <a href="#generator" class="inline-flex items-center gap-3 bg-white text-primary-700 px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-200">
+        <i class="fas fa-bolt"></i>
+        Generate Now
+      </a>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 dark:bg-black text-gray-300 py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-7xl mx-auto">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <!-- Brand -->
+        <div class="md:col-span-1">
+          <div class="flex items-center space-x-3 mb-4">
+            <div class="w-10 h-10 gradient-bg rounded-lg flex items-center justify-center">
+              <i class="fas fa-terminal text-white text-xl"></i>
+            </div>
+            <span class="text-xl font-bold text-white">NameGen</span>
+          </div>
+          <p class="text-sm text-gray-400 leading-relaxed">
+            Free name generator for developers, gamers, and creators. No signup required.
+          </p>
+        </div>
+
+        <!-- Product -->
+        <div>
+          <h4 class="font-semibold text-white mb-4">Product</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#generator" class="hover:text-white transition-colors">Generator</a></li>
+            <li><a href="#examples" class="hover:text-white transition-colors">Examples</a></li>
+            <li><a href="#features" class="hover:text-white transition-colors">Features</a></li>
+            <li><a href="#faq" class="hover:text-white transition-colors">FAQ</a></li>
+          </ul>
+        </div>
+
+        <!-- Legal -->
+        <div>
+          <h4 class="font-semibold text-white mb-4">Legal</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Cookie Policy</a></li>
+          </ul>
+        </div>
+
+        <!-- Connect -->
+        <div>
+          <h4 class="font-semibold text-white mb-4">Connect</h4>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#" class="hover:text-white transition-colors">GitHub</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Twitter</a></li>
+            <li><a href="#" class="hover:text-white transition-colors">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-800 pt-8 flex flex-col sm:flex-row justify-between items-center">
+        <p class="text-sm text-gray-500 mb-4 sm:mb-0">
+          &copy; 2024 NameGen. All rights reserved.
+        </p>
+        <p class="text-sm text-gray-500">
+          Made with <i class="fas fa-heart text-red-500 mx-1"></i> for creators everywhere.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
+    <i class="fas fa-check-circle text-green-400"></i>
+    <span class="font-medium">Copied to clipboard!</span>
+  </div>
+
+  <!-- JavaScript -->
+  <script>
+    // ============================================
+    // DATA: Word Banks
+    // ============================================
+
+    const wordBanks = {
+      tech: {
+        prefix: ['Cyber', 'Pixel', 'Code', 'Dev', 'Tech', 'Data', 'Cloud', 'Bit', 'Byte', 'Logic', 'Quantum', 'Neural', 'Matrix', 'Binary', 'Digital', 'Sync', 'Node', 'Bug', 'Script', 'Stack', 'Shell', 'Kernel', 'Cache', 'Flux'],
+        suffix: ['Master', 'Ninja', 'Wizard', 'Guru', 'Hunter', 'Runner', 'Mancer', 'Maker', 'Builder', 'Architect', 'Pilot', 'Operator', 'Engineer', 'Solver', 'Finder', 'Seeker', 'Guardian', 'Paladin', 'Warrior'],
+        numbers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 42, 77, 88, 99, 404, 500, 707, 808, 101, 202, 303]
+      },
+      gaming: {
+        prefix: ['Shadow', 'Dragon', 'Phoenix', 'Fire', 'Ice', 'Storm', 'Thunder', 'Dark', 'Light', 'Night', 'Chaos', 'Frost', 'Blaze', 'Venom', 'Steel', 'Mystic', 'Crimson', 'Stealth', 'Viper', 'Rogue', 'Ghost', 'Spectre', 'Phantom', 'Blade', 'Saber', 'Apex', 'Elite'],
+        suffix: ['Slayer', 'Hunter', 'Killer', 'Destroyer', 'Champion', '-X', 'Lord', 'King', 'Queen', 'Emperor', 'God', 'Deity', 'Master', 'Grandmaster', 'Overlord', 'Legend', 'Hero', 'Vanguard', 'Titan', 'Spartan', 'Knight', 'Warden', 'Reaper', 'Assassin'],
+        numbers: [0, 1, 7, 13, 21, 33, 66, 77, 88, 99, 420, 777, 1337, 999]
+      },
+      professional: {
+        prefix: ['Pro', 'Expert', 'Master', 'Senior', 'Advanced', 'Elite', 'Prime', 'First', 'Chief', 'Principal', 'Lead', 'Top', 'Best', 'Apex', 'Premier', 'Global', 'National', 'International'],
+        suffix: ['Solutions', 'Consulting', 'Group', 'Associates', 'Partners', 'Firm', 'Enterprises', 'Corp', 'Labs', 'Institute', 'Academy', 'School', 'College', 'University', 'Management', 'Administration', 'Services', 'Agency', 'Bureau'],
+        singleWords: ['Visionary', 'Strategist', 'Innovator', 'Pioneer', 'Trailblazer', 'ThoughtLeader', 'ChangeMaker', 'ProblemSolver', 'Creative', 'Analyst', 'Advisor', 'Mentor', 'Coach', 'Speakers', 'Trainer', 'Educator', 'Researcher', 'Developer', 'Designer', 'Creator']
+      }
+    };
+
+    const domainTLDs = ['.dev', '.io', '.app', '.net', '.cloud', '.tech', '.online'];
+    const firstNames = ['James', 'John', 'Robert', 'Michael', 'William', 'David', 'Richard', 'Joseph', 'Thomas', 'Charles', 'Emma', 'Olivia', 'Ava', 'Isabella', 'Sophia', 'Mia', 'Charlotte', 'Amelia', 'Harper', 'Evelyn', 'Liam', 'Noah', 'Oliver', 'Elijah', 'Lucas', 'Mason', 'Logan', 'Ethan', 'Alexander', 'Jacob'];
+    const lastNames = ['Smith', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Miller', 'Davis', 'Rodriguez', 'Martinez', 'Hernandez', 'Lopez', 'Gonzalez', 'Wilson', 'Anderson', 'Thomas', 'Taylor', 'Moore', 'Jackson', 'Martin', 'Lee', 'Perez', 'Thompson', 'White', 'Harris', 'Sanchez', 'Clark', 'Ramirez', 'Lewis', 'Robinson'];
+
+    // ============================================
+    // STATE
+    // ============================================
+
+    let currentTab = 'username';
+    let isGenerating = false;
+
+    // ============================================
+    // THEME TOGGLE
+    // ============================================
+
+    const themeToggle = document.getElementById('theme-toggle');
+    const html = document.documentElement;
+
+    themeToggle.addEventListener('click', () => {
+      if (html.classList.contains('dark')) {
+        html.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        html.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    });
+
+    // ============================================
+    // TAB SWITCHING
+    // ============================================
+
+    const tabs = document.querySelectorAll('.gen-tab');
+    const panels = document.querySelectorAll('.gen-panel');
+
+    tabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        const targetTab = tab.dataset.tab;
+
+        // Update tab states
+        tabs.forEach(t => {
+          t.classList.remove('active', 'bg-primary-600', 'text-white', 'dark:bg-primary-500');
+          t.classList.add('bg-gray-100', 'dark:bg-slate-700', 'text-gray-700', 'dark:text-gray-300');
+          t.setAttribute('aria-selected', 'false');
+        });
+        tab.classList.add('active', 'bg-primary-600', 'text-white', 'dark:bg-primary-500');
+        tab.classList.remove('bg-gray-100', 'dark:bg-slate-700', 'text-gray-700', 'dark:text-gray-300');
+        tab.setAttribute('aria-selected', 'true');
+
+        // Update panel states
+        panels.forEach(p => p.classList.add('hidden'));
+        panels.forEach(p => p.classList.remove('block'));
+        document.getElementById(`${targetTab}-panel`).classList.remove('hidden');
+        document.getElementById(`${targetTab}-panel`).classList.add('block');
+
+        currentTab = targetTab;
+
+        // Clear results when switching tabs
+        clearResults();
+      });
+    });
+
+    // ============================================
+    // GENERATOR LOGIC
+    // ============================================
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    function pickRandom(arr) {
+      return arr[Math.floor(Math.random() * arr.length)];
+    }
+
+    function generateUsername(style, length, count) {
+      const results = [];
+      const bank = wordBanks[style];
+      const targets = [];
+
+      for (let i = 0; i < count; i++) {
+        let username;
+        let attempts = 0;
+        const maxAttempts = 50;
+
+        // Try to generate unique username
+        do {
+          attempts++;
+          const pattern = getRandomInt(0, 4);
+
+          if (style === 'professional') {
+            // Professional has specific patterns
+            if (pattern === 0) {
+              // Single word
+              username = pickRandom(bank.singleWords);
+            } else if (pattern === 1) {
+              // Prefix + single word
+              username = pickRandom(bank.prefix) + pickRandom(bank.singleWords);
+            } else if (pattern === 2) {
+              // Prefix + suffix (both professional-style)
+              const suffixes = ['Group', 'International', 'Consulting', 'Enterprises', 'Holdings', 'Ventures', 'Capital', 'Partners', 'Management', 'Services'];
+              username = pickRandom(bank.prefix) + pickRandom(suffixes);
+            } else {
+              // Mix of first-style words
+              username = pickRandom(bank.prefix) + '-' + pickRandom(bank.suffix);
+            }
+          } else {
+            // Tech and Gaming styles
+            if (pattern === 0) {
+              username = pickRandom(bank.prefix) + pickRandom(bank.suffix);
+            } else if (pattern === 1) {
+              username = pickRandom(bank.prefix) + pickRandom(bank.suffix).toLowerCase();
+            } else if (pattern === 2) {
+              username = pickRandom(bank.prefix).toLowerCase() + '_' + pickRandom(bank.suffix).toLowerCase();
+            } else if (pattern === 3) {
+              username = pickRandom(bank.prefix) + getRandomInt(10, 999);
+            } else {
+              username = pickRandom(bank.prefix) + pickRandom(bank.suffix) + getRandomInt(1, 999);
+            }
+          }
+
+          // Apply length constraints
+          if (length === 'short') {
+            if (username.length > 8) continue;
+          } else if (length === 'medium') {
+            if (username.length < 9 || username.length > 12) continue;
+          } else if (length === 'long') {
+            if (username.length < 13) continue;
+          }
+
+          targets.push(username);
+        } while (targets.includes(username) && attempts < maxAttempts);
+
+        if (attempts < maxAttempts) {
+          results.push(username);
+        } else {
+          // If we couldn't generate unique one, just push whatever we got
+          results.push(username || pickRandom(bank.prefix) + getRandomInt(1, 999));
+        }
+      }
+
+      return results;
+    }
+
+    function generateHostname(style, length, count) {
+      const results = [];
+      const bank = wordBanks[style];
+
+      for (let i = 0; i < count; i++) {
+        let hostname;
+        const pattern = getRandomInt(0, 4);
+        const tld = pickRandom(domainTLDs);
+        const num = pickRandom(bank.numbers);
+
+        if (style === 'professional') {
+          if (pattern === 0) {
+            hostname = pickRandom(bank.prefix).toLowerCase() + '-' + pickRandom(bank.suffix).toLowerCase() + tld;
+          } else if (pattern === 1) {
+            hostname = pickRandom(bank.prefix).toLowerCase() + tld;
+          } else if (pattern === 2) {
+            hostname = 'www-' + pickRandom(bank.suffix).toLowerCase() + tld;
+          } else if (pattern === 3) {
+            hostname = 'api-' + pickRandom(bank.prefix).toLowerCase() + tld;
+          } else {
+            hostname = pickRandom(bank.singleWords).toLowerCase().replace(/([A-Z])/g, '-$1').toLowerCase() + tld;
+          }
+        } else {
+          if (pattern === 0) {
+            hostname = pickRandom(bank.prefix).toLowerCase() + '-' + pickRandom(bank.suffix).toLowerCase() + '-' + num + tld;
+          } else if (pattern === 1) {
+            hostname = pickRandom(bank.prefix).toLowerCase() + num + tld;
+          } else if (pattern === 2) {
+            hostname = pickRandom(bank.prefix).toLowerCase() + '.' + pickRandom(bank.suffix).toLowerCase() + tld;
+          } else if (pattern === 3) {
+            hostname = 'node-' + pickRandom(bank.prefix).toLowerCase() + '-' + num + tld;
+          } else {
+            hostname = pickRandom(bank.prefix).toLowerCase() + '-' + pickRandom(bank.prefix).toLowerCase() + tld;
+          }
+        }
+
+        // Apply length constraints (without TLD)
+        const namePart = hostname.split('.')[0];
+        if (length === 'short') {
+          if (namePart.length > 8) i--;
+          else results.push(hostname);
+        } else if (length === 'medium') {
+          if (namePart.length < 9 || namePart.length > 15) i--;
+          else results.push(hostname);
+        } else {
+          if (namePart.length < 16) i--;
+          else results.push(hostname);
+        }
+      }
+
+      return results;
+    }
+
+    function generateRandomNames(style, length, count) {
+      const results = [];
+
+      for (let i = 0; i < count; i++) {
+        const firstName = pickRandom(firstNames);
+        const lastName = pickRandom(lastNames);
+        const separator = getRandomInt(0, 1) === 0 ? ' ' : '.';
+
+        let name;
+
+        if (style === 'tech') {
+          // Tech + name
+          name = pickRandom(wordBanks.tech.prefix) + separator + lastName;
+        } else if (style === 'gaming') {
+          // Gaming style names
+          name = pickRandom(wordBanks.gaming.prefix) + ' ' + firstName;
+        } else {
+          if (getRandomInt(0, 1) === 0) {
+            name = firstName + ' ' + lastName;
+          } else {
+            name = firstName + separator + lastName;
+          }
+        }
+
+        if (length === 'short') {
+          // Just first name or short combo
+          name = name.length > 12 ? firstName : name;
+        } else if (length === 'long') {
+          // Full name with middle initial sometimes
+          if (getRandomInt(0, 2) === 0) {
+            const middleInitial = firstName.charAt(0) + '.';
+            name = firstName + ' ' + middleInitial + ' ' + lastName;
+          }
+        }
+
+        results.push(name);
+      }
+
+      return results;
+    }
+
+    // ============================================
+    // GENERATE BUTTON HANDLER
+    // ============================================
+
+    const generateBtn = document.getElementById('generate-btn');
+    const btnText = generateBtn.querySelector('.btn-text');
+    const spinner = generateBtn.querySelector('.spinner');
+    const resultsGrid = document.getElementById('results-grid');
+    const emptyState = document.getElementById('empty-state');
+    const resultsContainer = document.getElementById('generator').querySelector('.bg-white.dark\\:bg-slate-800');
+
+    generateBtn.addEventListener('click', async () => {
+      if (isGenerating) return;
+
+      isGenerating = true;
+      btnText.textContent = 'Generating...';
+      spinner.classList.remove('hidden');
+      generateBtn.disabled = true;
+
+      // Simulate brief loading for UX
+      await new Promise(resolve => setTimeout(resolve, 400));
+
+      const style = document.getElementById('style-select').value;
+      const length = document.getElementById('length-select').value;
+      const count = parseInt(document.getElementById('count-select').value);
+
+      let results;
+      if (currentTab === 'username') {
+        results = generateUsername(style, length, count);
+      } else if (currentTab === 'hostname') {
+        results = generateHostname(style, length, count);
+      } else {
+        results = generateRandomNames(style, length, count);
+      }
+
+      displayResults(results);
+
+      btnText.textContent = 'Generate Again';
+      spinner.classList.add('hidden');
+      generateBtn.disabled = false;
+      isGenerating = false;
+    });
+
+    function displayResults(results) {
+      emptyState.classList.add('hidden');
+      resultsGrid.classList.remove('hidden');
+
+      // Clear previous results
+      resultsGrid.innerHTML = '';
+
+      // Add new results with staggered animation
+      results.forEach((result, index) => {
+        const card = document.createElement('div');
+        card.className = 'result-card bg-white dark:bg-slate-800 p-4 rounded-xl border border-gray-200 dark:border-slate-600 animate-pop-in shadow-sm hover:shadow-md';
+        card.style.animationDelay = `${index * 0.05}s`;
+
+        card.innerHTML = `
+          <div class="flex justify-between items-center gap-3">
+            <code class="text-sm sm:text-base font-mono break-all flex-1 text-gray-900 dark:text-gray-100">${escapeHtml(result)}</code>
+            <button class="copy-btn p-2 hover:bg-gray-100 dark:hover:bg-slate-700 rounded-lg transition-all duration-200 flex-shrink-0" data-text="${escapeHtml(result)}" aria-label="Copy to clipboard">
+              <i class="fas fa-copy text-gray-500 dark:text-gray-400"></i>
+            </button>
+          </div>
+        `;
+
+        resultsGrid.appendChild(card);
+      });
+
+      // Add copy functionality to new buttons
+      attachCopyListeners();
+    }
+
+    function clearResults() {
+      resultsGrid.innerHTML = '';
+      resultsGrid.classList.add('hidden');
+      emptyState.classList.remove('hidden');
+      btnText.textContent = 'Generate Names';
+    }
+
+    // ============================================
+    // COPY TO CLIPBOARD
+    // ============================================
+
+    let toastTimeout;
+
+    function showToast() {
+      const toast = document.getElementById('toast');
+      toast.classList.add('show');
+
+      clearTimeout(toastTimeout);
+      toastTimeout = setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2000);
+    }
+
+    function copyToClipboard(text) {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(showToast).catch(fallbackCopy);
+      } else {
+        fallbackCopy(text);
+      }
+    }
+
+    function fallbackCopy(text) {
+      const textArea = document.createElement('textarea');
+      textArea.value = text;
+      textArea.style.position = 'fixed';
+      textArea.style.left = '-9999px';
+      document.body.appendChild(textArea);
+      textArea.select();
+
+      try {
+        document.execCommand('copy');
+        showToast();
+      } catch (err) {
+        console.error('Copy failed:', err);
+        alert('Failed to copy. Please select and copy manually.');
+      }
+
+      document.body.removeChild(textArea);
+    }
+
+    function attachCopyListeners() {
+      const copyBtns = document.querySelectorAll('.copy-btn');
+      copyBtns.forEach(btn => {
+        btn.removeEventListener('click', handleCopyClick);
+        btn.addEventListener('click', handleCopyClick);
+      });
+    }
+
+    function handleCopyClick(e) {
+      const btn = e.currentTarget;
+      const text = btn.dataset.text;
+      const icon = btn.querySelector('i');
+
+      // Visual feedback
+      icon.className = 'fas fa-check text-green-500';
+      copyToClipboard(text);
+
+      setTimeout(() => {
+        icon.className = 'fas fa-copy text-gray-500 dark:text-gray-400';
+      }, 2000);
+    }
+
+    // Attach copy listeners to example cards
+    document.addEventListener('DOMContentLoaded', () => {
+      attachCopyListeners();
+    });
+
+    // ============================================
+    // FAQ ACCORDION
+    // ============================================
+
+    const faqItems = document.querySelectorAll('.faq-item');
+
+    faqItems.forEach(item => {
+      const question = item.querySelector('.faq-question');
+      const answer = item.querySelector('.faq-answer');
+      const chevron = item.querySelector('.faq-chevron') || question.querySelector('.fa-chevron-down');
+
+      question.addEventListener('click', () => {
+        const isOpen = !answer.classList.contains('hidden');
+
+        // Close all other items
+        faqItems.forEach(otherItem => {
+          if (otherItem !== item) {
+            const otherAnswer = otherItem.querySelector('.faq-answer');
+            const otherChevron = otherItem.querySelector('.faq-question .fa-chevron-down');
+            otherAnswer.classList.add('hidden');
+            otherAnswer.parentElement.classList.remove('border-b-0');
+            otherChevron.style.transform = 'rotate(0deg)';
+            otherItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+          }
+        });
+
+        // Toggle current item
+        if (isOpen) {
+          answer.classList.add('hidden');
+          chevron.style.transform = 'rotate(0deg)';
+          question.setAttribute('aria-expanded', 'false');
+        } else {
+          answer.classList.remove('hidden');
+          chevron.style.transform = 'rotate(180deg)';
+          question.setAttribute('aria-expanded', 'true');
+        }
+      });
+    });
+
+    // ============================================
+    // SCROLL ANIMATIONS (Intersection Observer)
+    // ============================================
+
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('animate-fade-in-up');
+          entry.target.classList.remove('opacity-0', 'translate-y-8');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    // Observe all elements with scroll-reveal class
+    document.addEventListener('DOMContentLoaded', () => {
+      const revealElements = document.querySelectorAll('.scroll-reveal');
+      revealElements.forEach(el => {
+        el.classList.add('opacity-0', 'translate-y-8');
+        observer.observe(el);
+      });
+
+      // Set initial state for hero (already visible)
+      const hero = document.querySelector('section:first-of-type');
+      if (hero) {
+        hero.classList.add('opacity-100', 'translate-y-0');
+      }
+    });
+
+    // ============================================
+    // UTILITY FUNCTIONS
+    // ============================================
+
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // ============================================
+    // SMOOTH SCROLL FOR ANCHOR LINKS
+    // ============================================
+
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function(e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+          const navHeight = document.querySelector('nav').offsetHeight;
+          const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - navHeight - 20;
+          window.scrollTo({
+            top: targetPosition,
+            behavior: 'smooth'
+          });
+        }
+      });
+    });
+
+  </script>
+</body>
+</html>
