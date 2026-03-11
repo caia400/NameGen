@@ -1,0 +1,1 @@
+Username & Hostname Generator is a fast and simple online tool that helps you create unique usernames and professional hostnames in seconds. Perfect for developers, gamers, startups and anyone who needs creative and secure names for accounts, servers, or projects. Generate hundreds of ideas instantly and copy them with one click.
